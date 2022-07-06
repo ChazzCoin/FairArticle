@@ -4,5 +4,12 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="Fopics" />
+    <orderEntry type="module" module-name="pyFongo" />
+    <orderEntry type="module" module-name="HarkServer" />
+    <orderEntry type="module" module-name="MasterJarticle" />
+    <orderEntry type="module" module-name="FCoRE" />
+    <orderEntry type="module" module-name="FairWeb" />
+    <orderEntry type="module" module-name="TheArchiveMachine" />
   </component>
 </module>

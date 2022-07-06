@@ -4,7 +4,7 @@ from fairParser import Keys
 from FLog.LOGGER import Log
 from Core import Extractor
 
-Log = Log("FAIR.Parser.JsonParser")
+Log = Log("FairArticle.Parser.JsonParser")
 
 """ import keys() method from Keys Module. """
 keys = Keys.keys
@@ -23,6 +23,8 @@ def parse(data, parseAll=False, client=False, extractDate=False) -> {}:
         json_obj["client"] = client
         json_obj["date_created"] = DATE.parse_obj_to_month_day_year_str(DATE.get_now_date_dt())
         json_obj["tags"] = DICT.get_all_keys(data, keys("tags"))
+        json_obj["description"] = DICT.get_all_keys(data, keys("description"), force_type=True)
+        json_obj["img_url"] = DICT.get_all_keys(data, keys("imgUrl"), force_type=True)
         # Date Extraction Attempt (might be None/False)
         published_date = DICT.get_all_keys(data, keys("published_date"))
         # If Date
@@ -40,9 +42,7 @@ def parse(data, parseAll=False, client=False, extractDate=False) -> {}:
             # No Date, plus no extractDate setting.
             else:
                 json_obj["published_date"] = DATE.parse_obj_to_month_day_year_str(DATE.get_now_date_dt())
-        # + Article Core
-        json_obj["description"] = DICT.get_all_keys(data, keys("description"), force_type=True)
-        json_obj["img_url"] = DICT.get_all_keys(data, keys("imgUrl"), force_type=True)
+        # TODO: -> Grab a list of images to use.
         # json_obj["img_urls"] = DICT.get_all_keys(data, keys("imgUrl"), force_type=True)
         # enhanced -> Jarticle
         if parseAll:

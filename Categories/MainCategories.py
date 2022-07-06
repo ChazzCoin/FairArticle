@@ -202,7 +202,7 @@ class MainCategories:
                              "Lay off": HIGH_WEIGHT,
                              "dow jones": MAX_WEIGHT,
                              "dow": MIDDLE_WEIGHT, 
-                             "s&pMIDDLE_WEIGHT0": MAX_WEIGHT,
+                             "s&p500": MAX_WEIGHT,
                              "nasdaq": MAX_WEIGHT,
                              "nyse": MAX_WEIGHT,
                              "shareholders": MAX_WEIGHT
