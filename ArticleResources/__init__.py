@@ -1,4 +1,4 @@
-from Resources.Sources import Sources
+from ArticleResources.Sources import Sources
 import os
 import re
 import pandas
