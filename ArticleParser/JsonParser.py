@@ -29,19 +29,21 @@ def parse(data, parseAll=False, client=False, extractDate=False) -> {}:
         published_date = DICT.get_all_keys(data, keys("published_date"))
         # If Date
         if published_date:
-            json_obj["published_date"] = DATE.parse_obj_to_month_day_year_str(published_date)
+            pub_date = DATE.parse_obj_to_month_day_year_str(published_date)
         else:
             # If no date, but extractDate setting is enabled.
             if extractDate:
                 rawHTML = DICT.get("html", data, False)
                 extractedDate = Extractor.ExtractDateFromHTML(rawHTML)
                 if extractedDate:
-                    json_obj["published_date"] = extractedDate
+                    pub_date = extractedDate
                 else:
-                    json_obj["published_date"] = DATE.parse_obj_to_month_day_year_str(DATE.get_now_date_dt())
+                    pub_date = DATE.parse_obj_to_month_day_year_str(DATE.get_now_date_dt())
             # No Date, plus no extractDate setting.
             else:
-                json_obj["published_date"] = DATE.parse_obj_to_month_day_year_str(DATE.get_now_date_dt())
+                pub_date = DATE.parse_obj_to_month_day_year_str(DATE.get_now_date_dt())
+        json_obj["published_date"] = pub_date
+        json_obj["pub_date"] = DATE.TO_DATETIME(pub_date)  # for mongodb queries. -> probably my biggest fuck up so far...
         # TODO: -> Grab a list of images to use.
         # json_obj["img_urls"] = DICT.get_all_keys(data, keys("imgUrl"), force_type=True)
         # enhanced -> Jarticle
