@@ -15,8 +15,8 @@ from Categories import Topics
 
 Log = Log("Engine.NLTK")
 
-nltk.download('punkt')
-tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+two = str(FairResources.NLTK_PUNKT)
+tokenizer = nltk.data.load(two)
 
 stop_words = FairResources.get_stopwords()
 WEIGHTED_TERMS = Topics.ALL_CATEGORIES().get_all_weighted_terms()
