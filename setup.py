@@ -5,7 +5,7 @@ current = os.getcwd()
 
 setup(
     name='FairArticle',
-    version='3.0.0',
+    version='3.0.1',
     description='Article Provider for Sources, Categorizer, Utils and more.',
     url='https://github.com/chazzcoin/FairArticle',
     author='ChazzCoin',
@@ -15,7 +15,7 @@ setup(
     package_data={
         'ArticleResources': ['*.txt', '*.csv']
     },
-    install_requires=['fairweb>=3.1.1', 'fairresources>=1.0.0'],
+    install_requires=['fairweb>=3.2.0', 'fairresources>=2.0.0', 'nltk==3.5'],
     classifiers=[
         'Development Status :: 1 - Planning',
         'Intended Audience :: Science/Research',
