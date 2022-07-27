@@ -1,10 +1,9 @@
 from Categories.SubCategories import SubCategories
-
-import ArticleResources
+import FairResources
 from Categories.MainCategories import MainCategories
 from Categories.SubCategories import SubCategories
 from Categories import Categorizer
-from ArticleResources.Sources import Sources
+from FairResources.Sources import Sources
 from FList import LIST
 from FSON import DICT
 
@@ -122,9 +121,9 @@ class Topics:
         self.sources = temp_json
 
     def set_resource_urls(self):
-        google_sources = ArticleResources.get_google_sources()
-        popular_sources = ArticleResources.get_popular_sources()
-        rss_sources = ArticleResources.get_rss_sources()
+        google_sources = FairResources.get_google_sources()
+        popular_sources = FairResources.get_popular_sources()
+        rss_sources = FairResources.get_rss_sources()
         self.set_source("google_sources", google_sources)
         self.set_source("popular_sources", popular_sources)
         self.set_source("rss_sources", rss_sources)
@@ -165,8 +164,11 @@ class Topics:
     def get_main_category_var(var_name):
         """  GETTER HELPER  """
         try:
-            obj = MainCategories().__getattribute__(var_name)
-            return obj
+            cls = MainCategories()
+            if hasattr(cls, var_name):
+                obj = cls.__getattribute__(var_name)
+                return obj
+            return []
         except Exception as e:
             print(f"Failed to get attribute. e=[ {e} ]")
             return []
