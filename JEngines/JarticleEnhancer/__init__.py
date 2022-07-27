@@ -23,7 +23,7 @@ LAST_UPDATE = "May 19 2022"
 
 JP = jPro()
 
-def RUN(articles=None):
+def RUN(articles=None, saveToDB=True, returnArticles=False):
     """ -> MASTER PROCESSOR ID CREATED HERE <- """
     if not articles:
         articles = JP.get_ready_to_enhance()
@@ -32,6 +32,7 @@ def RUN(articles=None):
     arts = LIST.flatten(articles)
     Alert.send_alert(f"Jarticle: STARTING New Enhancements. COUNT=[ {len(arts)} ]")
     overall_count = 0
+    enhanced_articles = []
     for article in arts:
         if not article:
             continue
@@ -39,9 +40,15 @@ def RUN(articles=None):
         id = DICT.get("_id", article)
         date = DICT.get("published_date", article, "unknown")
         Log.i(f"Enhancing Article ID=[ {id} ], DATE=[ {date} ], COUNT=[ {overall_count} ]")
-        process_article(article, isUpdate=False)
+        e_art = process_article(article, isUpdate=False)
+        if saveToDB:
+            # -> Update Article in MongoDB
+            JP.update_article(e_art)
+        if returnArticles:
+            enhanced_articles.append(e_art)
     Log.i(f"Enhanced {overall_count} Articles!")
     Alert.send_alert(f"Jarticle: FINISHING New Enhancements.")
+    return enhanced_articles
 
 
 def categorizer(article):

@@ -5,7 +5,7 @@ current = os.getcwd()
 
 setup(
     name='FairArticle',
-    version='2.2.0',
+    version='3.0.0',
     description='Article Provider for Sources, Categorizer, Utils and more.',
     url='https://github.com/chazzcoin/FairArticle',
     author='ChazzCoin',
