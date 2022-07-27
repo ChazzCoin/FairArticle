@@ -3,9 +3,10 @@ import re
 import random
 import FList.LIST
 from fairNLP import Language
+import FairResources
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 # from nltk.corpus import wordnet as wn
-from nltk.corpus import stopwords
+# from nltk.corpus import stopwords
 from nltk.probability import FreqDist
 import nltk.data
 from FLog.LOGGER import Log
@@ -17,7 +18,7 @@ Log = Log("Engine.NLTK")
 nltk.download('punkt')
 tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
-stop_words = stopwords.words('english')
+stop_words = FairResources.get_stopwords()
 WEIGHTED_TERMS = Topics.ALL_CATEGORIES().get_all_weighted_terms()
 
 def get_content_sentiment(content) -> {}:

@@ -18,3 +18,7 @@ def download(url, enhance=False):
 
 def __enhance_articles(articles):
     return JarticleEnhancer.RUN(articles=articles, saveToDB=False, returnArticles=True)
+
+if __name__ == '__main__':
+    test = download("https://www.nbcnews.com/politics/justice-department/justice-department-investigating-trumps-actions-part-jan-6-probe-rcna40167")
+    print(test)
