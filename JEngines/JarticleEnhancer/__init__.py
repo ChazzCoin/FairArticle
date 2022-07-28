@@ -5,7 +5,7 @@ from FList import LIST
 from FSON import DICT
 from FDate import DATE
 from Jarticle.jProvider import jPro
-import Alert
+# import Alert
 from Jarticle.jdexes.jCompany import jCompany
 from FLog.LOGGER import Log
 Log = Log("Jarticle.Engine.Processor.ArticleProcessor_v2")
@@ -30,7 +30,7 @@ def RUN(articles=None, saveToDB=True, returnArticles=False):
     if not articles:
         return False
     arts = LIST.flatten(articles)
-    Alert.send_alert(f"Jarticle: STARTING New Enhancements. COUNT=[ {len(arts)} ]")
+    # Alert.send_alert(f"Jarticle: STARTING New Enhancements. COUNT=[ {len(arts)} ]")
     overall_count = 0
     enhanced_articles = []
     for article in arts:
@@ -47,7 +47,7 @@ def RUN(articles=None, saveToDB=True, returnArticles=False):
         if returnArticles:
             enhanced_articles.append(e_art)
     Log.i(f"Enhanced {overall_count} Articles!")
-    Alert.send_alert(f"Jarticle: FINISHING New Enhancements.")
+    # Alert.send_alert(f"Jarticle: FINISHING New Enhancements.")
     return enhanced_articles
 
 
