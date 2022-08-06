@@ -1,8 +1,8 @@
-from FSON import DICT
-from fairNLP import Language
-from JEngines import JarticleEnhancer
+from F import DICT
+from FNLP import Language
+from FA.JEngines import JarticleEnhancer
 
-from FLog.LOGGER import Log
+from F.LOG import Log
 Log = Log("Jarticle.Engine.Processor.ArticleProcessor_v2")
 
 LAST_UPDATE = "May 19 2022"

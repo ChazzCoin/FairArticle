@@ -5,10 +5,10 @@ import http.client as httplib
 import re
 import xml.etree.ElementTree
 from urllib.parse import urlparse
-from FSON import DICT
-from FList import LIST
+from F import DICT
+from F import LIST
 from jarDataProvider import jarProvider
-from FLog.LOGGER import Log
+from F.LOG import Log
 
 Log = Log("Engine.PageRank")
 

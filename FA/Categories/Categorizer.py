@@ -1,6 +1,6 @@
-from fairNLP import Language
-from FSON import DICT
-from FList import LIST
+from FNLP.Language import Tokenizer, Words
+from F import DICT
+from F import LIST
 
 """ DO NOT USE THIS
     -> USE TOPIC.MAIN_CATEGORIZER
@@ -32,7 +32,7 @@ def score_sentences(sentences, weighted_words):
 
 
 def score_content(content, weighted_words):
-    word_list = Language.complete_tokenization_v2(content)
+    word_list = Tokenizer.complete_tokenization_v2(content)
     temp = private_run_matcher(word_list, weighted_words)
     return temp
 
@@ -56,7 +56,7 @@ def categorizer_layer2(content, categories: {}):
 
 def private_content_to_wordList(content):
     # FAIR -> Completely Tokenize Words/Phrases
-    word_list = Language.complete_tokenization_v2(content)
+    word_list = Tokenizer.complete_tokenization_v2(content)
     return word_list
 
 """ PUBLIC -> Master Function <- """
@@ -100,7 +100,7 @@ def private_run_matcher(word_list, weighted_terms):
         if not w_term and w_term == "" or w_term == " ":
             continue
         # -> Expand Weighted Term
-        expanded_key_list = Language.expand_word(w_term)
+        expanded_key_list = Words.expand_word(w_term)
         # 3. -> Loop All Tokens AND MATCH!!
         for token in word_list:
             # Stay Safe People

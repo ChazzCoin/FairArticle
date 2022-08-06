@@ -1,13 +1,14 @@
-from JEngines.JarticleEnhancer.JProcess import process_article
-from JEngines import CategoryEngine, TickerEngine
-from JHelpers import NLTK
-from FList import LIST
-from FSON import DICT
-from FDate import DATE
-from Jarticle.jProvider import jPro
+from FA.JEngines.JarticleEnhancer.JProcess import process_article
+from FA.JEngines import CategoryEngine
+from FA.JEngines import TickerEngine
+from FA.JHelpers import NLTK
+from FLanguage import Summarizer, Keywords
+from F import LIST, DICT, DATE
+from FM.Jarticle.jProvider import jPro
 # import Alert
-from Jarticle.jdexes.jCompany import jCompany
-from FLog.LOGGER import Log
+from FM.Jarticle.jdexes.jCompany import jCompany
+from F.LOG import Log
+
 Log = Log("Jarticle.Engine.Processor.ArticleProcessor_v2")
 
 WORDS = "words"
@@ -85,7 +86,7 @@ def get_company_reference(article):
 def get_summary(article):
     Log.i("Summary Engine...")
     body = DICT.get("body", article, default="False")
-    summary = NLTK.summarize_v2(body, 4)
+    summary = Summarizer.summarize(body, 4)
     # summary = Language.text_summarizer(body, 4)
     return summary
 
@@ -93,7 +94,7 @@ def get_keywords(article):
     Log.i("Keywords Engine...")
     title = DICT.get("title", article, default="False")
     body = DICT.get("body", article, default="False")
-    keywords = NLTK.keywords(str(body) + str(title))
+    keywords = Keywords.keywords(str(body) + str(title))
     newList = []
     for item in keywords:
         newList.append(item)
@@ -128,4 +129,5 @@ def update_enhanced_summary(article):
     return article
 
 if __name__ == '__main__':
-    RUN()
+    test = RUN(saveToDB=False, returnArticles=True)
+    print(test)

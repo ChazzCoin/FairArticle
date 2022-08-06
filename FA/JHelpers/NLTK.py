@@ -1,58 +1,24 @@
-import nltk
 import re
-import FList.LIST
-from fairNLP import Language
+import F.LIST
+from FNLP.Language import Sentences, Words
 import FairResources
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
-import nltk.data
-from FLog.LOGGER import Log
-
-from Categories import Topics
+from F.LOG import Log
+from FA.Categories import Topics
 
 Log = Log("Engine.NLTK")
-
-punkt_one = str(FairResources.NLTK_PUNKT_ONE)
-punkt_two = str(FairResources.NLTK_PUNKT_TWO)
 
 stop_words = FairResources.get_stopwords()
 WEIGHTED_TERMS = Topics.ALL_CATEGORIES().get_all_weighted_terms()
 
-def load_punkt():
-    try:
-        nltk.download('punkt')
-        tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
-        return tokenizer
-    except:
-        Log.e("Failed to load NLTK Punkt Tokenizer 1")
-    try:
-        tokenizer = nltk.data.load(punkt_one)
-        return tokenizer
-    except:
-        Log.e("Failed to load NLTK Punkt Tokenizer 2")
-    try:
-        tokenizer = nltk.data.load(punkt_two)
-        return tokenizer
-    except:
-        Log.e("Failed to load NLTK Punkt Tokenizer 3")
-    return None
-
 def get_content_sentiment(content) -> {}:
     """ Sentiment of Content. """
+    from nltk.sentiment.vader import SentimentIntensityAnalyzer
     vader = SentimentIntensityAnalyzer()
     all_weighted_terms = WEIGHTED_TERMS
     vader.lexicon.update(all_weighted_terms)
     score = vader.polarity_scores(content)
     Log.v("get_content_sentiment:", score)
     return score
-
-def tokenize_content_into_sentences(content):
-    """ Split a large string into sentences """
-    tokenizer = load_punkt()
-    if not tokenizer:
-        return False
-    sentences = tokenizer.tokenize(content)
-    sentences = [x.replace('\n', '') for x in sentences if len(x) > 10]
-    return sentences
 
 def split_words(text):
     """ ALTERNATIVE: Split a string into array of words. """
@@ -76,23 +42,24 @@ def summarize_v2(content='', max_sents=5):
         return []
     keepList = []
     # Pre. -> Convert raw string of text into a List of Sentences.
-    # sent_test = Language.to_sentences(content)
-    sentences = tokenize_content_into_sentences(content)
+    sentences = Sentences.to_sentences(content)
+    # sentences = tokenize_content_into_sentences(content)
+    # test = Language.__compare(sent_test, sentences)
     if not sentences:
         return False
     # 1. -> If only 6 or less sentences to start, return now
     if len(sentences) <= 6:
-        return Language.combine_words(sentences)
+        return Words.combine_words(sentences)
     # 2. -> Always use the first and last sentence
-    firstSentence = FList.LIST.get(0, sentences, False)
+    firstSentence = F.LIST.get(0, sentences, False)
     if not firstSentence:
         return False
     lastIndex = len(keepList) - 1
-    lastSentence = FList.LIST.get(lastIndex, sentences, False)
+    lastSentence = F.LIST.get(lastIndex, sentences, False)
     if len(lastSentence) <= 50:
-        lastSentence = FList.LIST.get(lastIndex - 1, sentences, False)
+        lastSentence = F.LIST.get(lastIndex - 1, sentences, False)
     # 3. -> Remove First and Last Sentence
-    without_first = FList.LIST.remove_index(0, sentences)
+    without_first = F.LIST.remove_index(0, sentences)
     without_first_and_last = without_first[:-1]
     # 4. -> Filter out by length
     for sen in without_first_and_last:
@@ -116,7 +83,7 @@ def summarize_v2(content='', max_sents=5):
     middle_summary = form_summary_v3(middle_scored, 1)
     last_summary = form_summary_v3(last_scored, 1)
     # 8. -> Combine all 3 Sections into 1 Single Body of Text.
-    combined_summary = Language.combine_words(first_summary, middle_summary, last_summary)
+    combined_summary = Words.combine_words(first_summary, middle_summary, last_summary)
     # 9. -> Combine the first sentence, the middle body and the last sentence to form "The_Summary"
     The_Summary = SUMMARY(firstSentence, combined_summary, lastSentence)
     return The_Summary
@@ -129,12 +96,12 @@ def form_summary_v3(scored_sentences: [], max_sent=5):
     while current_index <= total_count:
         if len(final_list) >= max_sent:
             break
-        raw_sent = FList.LIST.get(current_index, sorted_scored_sentences)
-        sent = FList.LIST.get(1, raw_sent)
+        raw_sent = F.LIST.get(current_index, sorted_scored_sentences)
+        sent = F.LIST.get(1, raw_sent)
         # - Finish up
         final_list.append(sent)
         current_index += 1
-    the_summary = Language.combine_words(final_list)
+    the_summary = Words.combine_words(final_list)
     return the_summary
 
 def keywords(content):

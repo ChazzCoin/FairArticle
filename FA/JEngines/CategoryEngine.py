@@ -1,10 +1,8 @@
-# from Jarticle.jArticles import jArticles
-from Categories import Topics
-from FSON import DICT
-from FList import LIST
-from fairNLP import Language
-
-from FLog.LOGGER import Log
+from FA.Categories import Topics
+from F import DICT
+from F import LIST
+from FNLP.Language import Utils
+from F.LOG import Log
 Log = Log("Engine.Processor.TopicProcessor")
 
 # UNKNOWN = "Unknown"
@@ -39,7 +37,7 @@ def process_single_article(article, isUpdate=False):
         title = DICT.get("title", article)
         description = DICT.get("description", article)
         body = DICT.get("body", article)
-        content = Language.combine_args_str(title, description, body)
+        content = Utils.combine_args_str(title, description, body)
         # -> Score/Match Content
         main_cats = TOPIC.main_categorizer(content)
         sub_cats = TOPIC.sub_categorizer(content)

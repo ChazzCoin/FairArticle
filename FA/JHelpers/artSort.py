@@ -1,9 +1,5 @@
-from FConvert import CONVERT
-from FDate import DATE
-from FSON import DICT
-from FList import listSort
-from FLog.LOGGER import Log
-
+from F import CONVERT, DATE, DICT, LIST
+from F.LOG import Log
 Log = Log("FArt.artSort")
 
 def sort_articles_by_date(articles, toDict=True):
@@ -15,7 +11,7 @@ def sort_articles_by_date(articles, toDict=True):
             without_dates.append(art)
             continue
         with_dates.append(art)
-    sorted_articles = listSort.SORT_BY_DICT_KEY(with_dates, "published_date")
+    sorted_articles = LIST.SORT_BY_DICT_KEY(with_dates, "published_date")
     if not toDict:
         return sorted_articles
     by_date_dict = CONVERT.list_OF_Dicts_TO_Dict_BY_KeyValue(sorted_articles, "published_date")
@@ -35,5 +31,5 @@ def sort_articles_into_lists_by_date(articles, daysBack=7) -> list:
 
 def sort_articles_by_score(articles) -> list:
     Log.v(f"sort_hookups_by_score: IN: {articles}")
-    sorted_articles = listSort.SORT_BY_DICT_KEY(articles, "score")
+    sorted_articles = LIST.SORT_BY_DICT_KEY(articles, "score")
     return sorted_articles

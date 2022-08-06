@@ -1,11 +1,13 @@
-from FList import LIST
-from fairNLP import Ticker, Language, Regex
+from F import LIST
+from FNLP import Ticker
+from FNLP.Language import Tokenizer
+from FNLP.Regex import ReWords, Re
 from FairResources import get_stock_tickers, tickers
 import FairResources
-from FLog.LOGGER import Log
-from FSON import DICT
+from F.LOG import Log
+from F import DICT
 
-from Jarticle.jdexes.jCompany import jCompany
+from FM.Jarticle.jdexes.jCompany import jCompany
 jc = jCompany.constructor_jcompany()
 
 Log = Log("Jarticle.Engine.Sozin")
@@ -94,7 +96,7 @@ def classify_ticker_v2(potential_ticker, stopWords=None):
         return crypto, word
 
 def extract_company_names(content, returnTickers=True):
-    only_capital_words_list = Regex.extract_only_capital_words_manual(content)
+    only_capital_words_list = ReWords.extract_only_capital_words_manual(content)
     potential_company_names_dict = run_company_matcher_v2(only_capital_words_list)
     final_company_name_list = narrow_down_final_company_names(potential_company_names_dict)
     final_ticker_list = get_tickers_for_names(final_company_name_list)
@@ -106,10 +108,10 @@ def run_company_matcher_v1(potential_company):
     # 2. -> Loop Each Category Weighted Term
     temp_list2 = []
     all_companies = jc.get_list_of_all_companies()
-    tokenized_content = Language.complete_tokenization_v2(potential_company, toList=True)
+    tokenized_content = Tokenizer.complete_tokenization_v2(potential_company, toList=True)
     for company in all_companies:
         name = DICT.get("name", company)
-        tokenized_name_list = Language.complete_tokenization_v2(name, toList=True)
+        tokenized_name_list = Tokenizer.complete_tokenization_v2(name, toList=True)
         # 3. -> Loop All Tokens AND MATCH!!
         for token_content_word in tokenized_content:
             if token_content_word.lower() == "inc":
@@ -129,7 +131,7 @@ def run_company_matcher_v2(potential_companies):
         for pc in potential_companies:
             if not pc or not name:
                 continue
-            test = Regex.contains_strict(pc, name)
+            test = Re.contains_strict(pc, name)
             if test:
                 if temp_dict.__contains__(pc):
                     temp = temp_dict[pc]

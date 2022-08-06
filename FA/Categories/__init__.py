@@ -1,11 +1,10 @@
-from Categories.SubCategories import SubCategories
 import FairResources
-from Categories.MainCategories import MainCategories
-from Categories.SubCategories import SubCategories
-from Categories import Categorizer
+from FA.Categories.MainCategories import MainCategories
+from FA.Categories.SubCategories import SubCategories
+from FA.Categories import Categorizer
 from FairResources.Sources import Sources
-from FList import LIST
-from FSON import DICT
+from F import LIST
+from F import DICT
 
 MAIN_CATEGORY_NAMES = MainCategories.get_main_fopic_category_names()
 SUB_CATEGORY_NAMES = SubCategories.get_sub_category_names()

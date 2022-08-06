@@ -1,8 +1,8 @@
-from FSON import DICT
-from FDate import DATE
-from fairNLP import Regex
-from FLog.LOGGER import Log
-from Jarticle.jProvider import jPro as jpro
+from F import DICT
+from F import DATE
+from FNLP.Regex import Re
+from F.LOG import Log
+from FM.Jarticle.jProvider import jPro as jpro
 Log = Log("FWEB.Core.Validator")
 
 jp = jpro()
@@ -65,7 +65,7 @@ def v_body(body):
 
 def v_title(title):
     if title:
-        if Regex.contains_any(["UNKNOWN"], title):
+        if Re.contains_any(["UNKNOWN"], title):
             return False
         elif len(title) > 0:
             return True
