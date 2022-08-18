@@ -8,5 +8,6 @@
     <orderEntry type="module" module-name="FCoRE" />
     <orderEntry type="module" module-name="FairWeb" />
     <orderEntry type="module" module-name="FairResources" />
+    <orderEntry type="module" module-name="FairQt" />
   </component>
 </module>

@@ -5,14 +5,18 @@ current = os.getcwd()
 
 setup(
     name='FairArticle',
-    version='4.0.0',
+    version='4.1.0',
     description='Article Provider for Sources, Categorizer, Utils and more.',
     url='https://github.com/chazzcoin/FairArticle',
     author='ChazzCoin',
     author_email='chazzcoin@gmail.com',
     license='BSD 2-clause',
     packages=find_packages(),
-    install_requires=['fairweb>=4.0.0', 'fairresources>=4.0.0', 'nltk>=3.5'],
+    package_dir={'res': 'FAui'},
+    package_data={
+        'FAui': ['*', '*.ui']
+    },
+    install_requires=['fairweb>=4.1.0', 'fairresources>=4.0.0', 'nltk>=3.5'],
     classifiers=[
         'Development Status :: 1 - Planning',
         'Intended Audience :: Science/Research',
