@@ -10,8 +10,13 @@ class ViewElements:
     editChatInput = None
     listChatMessages = None
     toggleChatIsConnected = None
+    chatserver = None
     btnChatServerStart = None
     toggleChatServerIsRunning = None
+    listChatProcessResponse: QtWidgets.QListWidget = None
+    # -> Download
+    btnDownloadUrl = None
+    btnCrawlerUrl: QtWidgets.QPushButton = None
 
     # -> Statistics
     lblArticleCount = None
@@ -51,7 +56,7 @@ class ViewElements:
     editServerUser = None
     editServerPassword = None
     btnServerConnect: QtWidgets.QPushButton = None
-    btnServerDisconnected: QtWidgets.QPushButton = None
+    btnServerDisconnect: QtWidgets.QPushButton = None
     toggleServerIsConnected: QtWidgets.QCheckBox = False
     # -> Tabs
     tabWidget = None

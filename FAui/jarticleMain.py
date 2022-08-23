@@ -1,17 +1,22 @@
-from PyQt6 import QtWidgets
+#
+#/usr/bin/env python3
+import subprocess
+
+# from PyQt6 import QtWidgets
 import sys
+
+import FQt
 from FW.FairSocket import Server
-from F.CLASS import Thread
+from F.CLASS import Thread, FAIR_CALLBACK_CHANNEL
 from FCM.Jarticle.jProvider import jPro
 from F import LIST, DICT, DATE, OS
-from FQt import FairUI
-from FM import MServers
+from FQt.MainWindow import FairMainWindow
+from FCM import MCServers
 from FW.FairSocket import FairMessage
-from ViewElements import ViewElements
+from FAui.ViewElements import ViewElements
 from FW.FairSocket.Client import FairClient
 
-
-ui_file_path = f"{OS.get_cwd()}/jarticle.ui"
+ui_file_path = f"{OS.get_cwd()}/mainw.ui"
 
 """
  -> Everything/Widget should be named exactly the name
@@ -20,7 +25,7 @@ ui_file_path = f"{OS.get_cwd()}/jarticle.ui"
     : Action Function -> action_btnSearch
 """
 
-class LucasUI(FairUI, ViewElements):
+class LucasUI(FairMainWindow, ViewElements, FairClient):
     """ Variables are in ViewElements """
     searchMode = "default"
     fairclient = None
@@ -30,9 +35,14 @@ class LucasUI(FairUI, ViewElements):
         # -> Load UI Template File
         self.bind_ui(ui_file_path)
         # -> Do Custom Work
-        self.toggleServerIsConnected.setEnabled(False)
         # # -> Finish Up
         self.show()
+        self.toggleChatServerIsRunning.setEnabled(False)
+        self.toggleServerIsConnected.setEnabled(False)
+        self.btnDownloadUrl.setEnabled(False)
+        self.btnCrawlerUrl.setEnabled(False)
+        self.toggleChatProcessIsRunning.setEnabled(False)
+        self.toggleRangeEnable.setEnabled(False)
 
     """ Actions """
 
@@ -60,7 +70,16 @@ class LucasUI(FairUI, ViewElements):
 
     def onClick_btnSearch(self):
         """ Master Search """
+
         self._build_search()
+
+    @FAIR_CALLBACK_CHANNEL.subscribe
+    def onFairChannelCallback(self, msg):
+        print(msg)
+        results = self.get_arg("results", msg)
+        print(results)
+        self._load_new_articles(results)
+        pass
 
     def _load_new_articles(self, results):
         self.set_current_articles(results)
@@ -68,33 +87,61 @@ class LucasUI(FairUI, ViewElements):
         self.set_current_article(firstArt)
 
     def _build_search(self):
-        results = []
         searchTerm = self.editSearchText.text()
         todaysDate = DATE.get_now_month_day_year_str()
         earliestDate = DATE.TO_DATETIME("January 01 1900")
-        limit = self.editSearchLimit.toPlainText() if self.editSearchPage.toPlainText() != "" else 10
-        page = self.editSearchPage.toPlainText() if self.editSearchPage.toPlainText() != "" else 1
+        # -> Limit & Page
+        limit = self.editSearchLimit.toPlainText()
+        if limit in ["", " "]:
+            limit = 10
+        page = self.editSearchPage.toPlainText()
+        if page in ["", " "]:
+            page = 1
+        limit = int(limit)
+        page = int(page)
         rawSpecificDate = self.dateSearchSpecific.text()
         if self.searchMode == "dateRange":
+            print("search -> dateRange")
             rawDateRangeBefore = self.dateRangeSearchBefore.text()
             rawDateRangeAfter = self.dateRangeSearchAfter.text()
             results = self.jpro.search_by_date_range(searchTerm=searchTerm, gte=rawDateRangeAfter, lte=rawDateRangeBefore, limit=limit)
         elif self.searchMode == "onDate":
+            print("search -> onDate")
             results = self.jpro.search_by_date_range(searchTerm=searchTerm, gte=rawSpecificDate, lte=rawSpecificDate, limit=limit)
         elif self.searchMode == "beforeDate":
+            print("search -> beforeDate")
             results = self.jpro.search_by_date_range(searchTerm=searchTerm, gte=earliestDate, lte=rawSpecificDate, limit=limit)
         elif self.searchMode == "afterDate":
+            print("search -> afterDate")
             results = self.jpro.search_by_date_range(searchTerm=searchTerm, gte=rawSpecificDate, lte=todaysDate, limit=limit)
-
+        else:
+            print("search -> General Search All")
+            results = self.jpro.search_all(search_term=searchTerm, limit=limit, page=page)
         self._load_new_articles(results)
+
+    """ CHAT SERVER """
 
     def onClick_btnChatConnect(self, item):
         host = self.editChatHost.text()
-        self.fairclient = FairClient(host=host, userName="Jarticle", callback=self.onOverrideMessage)
+        self.fairclient = FairClient(serverUrl=host, userName="Jarticle", callback=self.onOverrideMessage,
+                                     OverRideOnResponse=self.override_OnResponse)
         self.fairclient.connect()
         self.fairclient.emitOnConnect()
+        self.fairclient.emit("onIsRunning", {})
+        self.fairclient.emit("onGetServerName", {})
+        self.btnChatConnect.setEnabled(False)
+        self.btnChatDisconnect.setEnabled(True)
         self.toggleChatIsConnected.setChecked(True)
         self.toggleChatIsConnected.setEnabled(False)
+
+    def onClick_btnChatDisconnect(self, item):
+        self.fairclient.socket.disconnect()
+        self.btnChatConnect.setEnabled(True)
+        self.btnChatDisconnect.setEnabled(False)
+        self.toggleChatIsConnected.setChecked(False)
+        self.toggleChatIsConnected.setEnabled(True)
+        self.listChatProcessResponse.clear()
+        self.labelChatServerName.setText("No Server Connected...")
 
     def onClick_btnChatSend(self, item):
         mess = self.editChatInput.text()
@@ -115,9 +162,42 @@ class LucasUI(FairUI, ViewElements):
         self.listChatMessages.addItem(m)
 
     def onClick_btnChatServerStart(self, item):
-        Thread.runFuncInBackground(Server.FairServer().start)
+        self.chatserver = Thread.runFuncInBackground(Server.FairServer().start_server)
         self.toggleChatServerIsRunning.setChecked(True)
         self.toggleChatServerIsRunning.setEnabled(False)
+        self.btnChatServerStart.setEnabled(False)
+
+    def onClick_btnChatProcessStart(self):
+        self.fairclient.emit("onStartProcess", {})
+        self.toggleChatProcessIsRunning.setChecked(True)
+        self.btnChatProcessStart.setEnabled(False)
+        self.btnChatProcessStop.setEnabled(True)
+
+    def override_OnResponse(self, data):
+        serverName = self.get_arg("serverName", data, default=None)
+        if serverName:
+            self.labelChatServerName.setText(f"Connected to: {str(serverName)}")
+        isRunning = self.get_arg("processIsRunning", data, default=None)
+        if isRunning is not None:
+            if isRunning == "True":
+                self.toggleChatProcessIsRunning.setChecked(True)
+                self.btnChatProcessStart.setEnabled(False)
+                self.btnChatProcessStop.setEnabled(True)
+            else:
+                self.toggleChatProcessIsRunning.setChecked(False)
+                self.btnChatProcessStart.setEnabled(True)
+                self.btnChatProcessStop.setEnabled(False)
+        if data:
+            self.listChatProcessResponse.addItem(str(data))
+
+    def onClick_btnChatProcessStop(self):
+        self.fairclient.emit("onStopProcess", {})
+        self.toggleChatProcessIsRunning.setChecked(False)
+        self.btnChatProcessStart.setEnabled(True)
+        self.btnChatProcessStop.setEnabled(False)
+
+
+    """ Article Search """
 
     def onToggled_toggleRangeEnable(self, item):
         self._reset_toggleDates()
@@ -168,6 +248,8 @@ class LucasUI(FairUI, ViewElements):
         self.toggleAfterDate.setEnabled(isEnabled)
         self.toggleAfterDate.setChecked(setTrue)
 
+    # -> Reports...
+
     def onClick_btnCryptoReport(self):
         pass
 
@@ -176,15 +258,24 @@ class LucasUI(FairUI, ViewElements):
         self.set_current_articles(meta_articles)
         pass
 
+    """ Mongo Server Connect for Articles """
     def onClick_btnServerConnect(self):
         name = self.editServerName.text()
         host = self.editServerHost.text()
         port = self.editServerPort.text()
-        dbUri = MServers.BASE_MONGO_URI(host, port)
+        dbUri = MCServers.BASE_MONGO_URI(host, port)
         self.jpro = jPro(dbUri=dbUri, dbName=name)
         if self.jpro and self.jpro.is_connected():
             self.toggleServerIsConnected.setChecked(True)
+            self.btnServerConnect.setEnabled(False)
             self.get_server_details()
+
+    def onClick_btnServerDisconnect(self):
+        if self.jpro:
+            self.jpro.core_client.close()
+            self.toggleServerIsConnected.setChecked(False)
+            self.btnServerConnect.setEnabled(True)
+            self.btnServerDisconnect.setEnabled(False)
 
     def onClick_btnClear(self):
         self.listArticlesByTitle.clear()
@@ -260,8 +351,5 @@ class LucasUI(FairUI, ViewElements):
     def clearSearchText(self):
         self.editSearchText.setText("")
 
-
 if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
-    window = LucasUI()
-    sys.exit(app.exec())
+    FQt.launchUI(LucasUI)
