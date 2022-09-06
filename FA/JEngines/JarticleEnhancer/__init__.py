@@ -1,12 +1,11 @@
 from FA.JEngines.JarticleEnhancer.JProcess import process_article
 from FA.JEngines import CategoryEngine
-from FA.JEngines import TickerEngine
+# from FA.JEngines import TickerEngine
 from FA.JHelpers import NLTK
-from FLanguage import Summarizer, Keywords
+from FNLP.Language import Summarizer, Keywords
 from F import LIST, DICT, DATE
-from FM.Jarticle.jProvider import jPro
-# import Alert
-from FM.Jarticle.jdexes.jCompany import jCompany
+from FCM.Jarticle.jProvider import jPro
+# from FCM.Jarticle.jdexes.jCompany import jCompany
 from F.LOG import Log
 
 Log = Log("Jarticle.Engine.Processor.ArticleProcessor_v2")
@@ -56,32 +55,32 @@ def categorizer(article):
     Log.i("Category Engine...")
     return CategoryEngine.process_single_article(article, isUpdate=True)
 
-def sozin(content):
-    Log.i("Ticker Engine...")
-    tickers = TickerEngine.extract_all(content)
-    stock_tickers = LIST.get(0, tickers)
-    crypto_tickers = LIST.get(1, tickers)
-    Log.d("Tickers: " + str(tickers))
-    if stock_tickers and crypto_tickers:
-        return tickers
-    elif stock_tickers:
-        return stock_tickers
-    elif crypto_tickers:
-        return crypto_tickers
-    return False
+# def sozin(content):
+#     Log.i("Ticker Engine...")
+#     tickers = TickerEngine.extract_all(content)
+#     stock_tickers = LIST.get(0, tickers)
+#     crypto_tickers = LIST.get(1, tickers)
+#     Log.d("Tickers: " + str(tickers))
+#     if stock_tickers and crypto_tickers:
+#         return tickers
+#     elif stock_tickers:
+#         return stock_tickers
+#     elif crypto_tickers:
+#         return crypto_tickers
+#     return False
 
-def get_company_reference(article):
-    Log.i("Company Reference Engine...")
-    tickers = DICT.get("tickers", article)
-    if not tickers:
-        return False
-    jc = jCompany.constructor_jcompany()
-    references = {}
-    for key in tickers:
-        id = jc.get_company_id_for_ticker(key)
-        if id and key not in references.keys():
-            references[key] = id
-    return references
+# def get_company_reference(article):
+#     Log.i("Company Reference Engine...")
+#     tickers = DICT.get("tickers", article)
+#     if not tickers:
+#         return False
+#     jc = jCompany.constructor_jcompany()
+#     references = {}
+#     for key in tickers:
+#         id = jc.get_company_id_for_ticker(key)
+#         if id and key not in references.keys():
+#             references[key] = id
+#     return references
 
 def get_summary(article):
     Log.i("Summary Engine...")
@@ -105,22 +104,22 @@ def get_sentiment(content):
     sentiment = NLTK.get_content_sentiment(content)
     return sentiment
 
-def get_source_page_rank(article):
-    Log.i("Page Rank Engine...")
-    from jarEngine.Helper import PageRank
-    url = DICT.get("url", article, "unknown")
-    rank = PageRank.get_page_rank(url)
-    return rank
+# def get_source_page_rank(article):
+#     Log.i("Page Rank Engine...")
+#     from jarEngine.Helper import PageRank
+#     url = DICT.get("url", article, "unknown")
+#     rank = PageRank.get_page_rank(url)
+#     return rank
 
 # -> [MASTER]
 def enhance_article(article, content):
     article = categorizer(article)
     article["keywords"] = get_keywords(article)
     article["summary"] = get_summary(article)
-    article["tickers"] = sozin(content)
-    article["company_ids"] = get_company_reference(article)
+    # article["tickers"] = sozin(content)
+    # article["company_ids"] = get_company_reference(article)
     article["sentiment"] = get_sentiment(content)
-    article["source_rank"] = get_source_page_rank(article)
+    # article["source_rank"] = get_source_page_rank(article)
     article["updatedDate"] = DATE.mongo_date_today_str()
     return article
 

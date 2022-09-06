@@ -125,14 +125,17 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
         host = self.editChatHost.text()
         self.fairclient = FairClient(serverUrl=host, userName="Jarticle", callback=self.onOverrideMessage,
                                      OverRideOnResponse=self.override_OnResponse)
-        self.fairclient.connect()
-        self.fairclient.emitOnConnect()
-        self.fairclient.emit("onIsRunning", {})
-        self.fairclient.emit("onGetServerName", {})
-        self.btnChatConnect.setEnabled(False)
-        self.btnChatDisconnect.setEnabled(True)
-        self.toggleChatIsConnected.setChecked(True)
-        self.toggleChatIsConnected.setEnabled(False)
+        try:
+            self.fairclient.connect()
+            self.fairclient.emitOnConnect()
+            self.fairclient.emit("onIsRunning", {})
+            self.fairclient.emit("onGetServerName", {})
+            self.btnChatConnect.setEnabled(False)
+            self.btnChatDisconnect.setEnabled(True)
+            self.toggleChatIsConnected.setChecked(True)
+            self.toggleChatIsConnected.setEnabled(False)
+        except:
+            return
 
     def onClick_btnChatDisconnect(self, item):
         self.fairclient.socket.disconnect()

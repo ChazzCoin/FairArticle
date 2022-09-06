@@ -1,4 +1,5 @@
 from F import DICT
+import F
 from FNLP import Language
 from FA.JEngines import JarticleEnhancer
 
@@ -20,7 +21,7 @@ def process_article(article, isUpdate):
     body = DICT.get("body", article)
     description = DICT.get("description", article)
     # -> Combine All Main Content (Title, Body, Description)
-    content = Language.combine_args_str(title, body, description)
+    content = F.combine_args_str(title, body, description)
     # -> Enhancers
     enhanced_article = JarticleEnhancer.enhance_article(article=article, content=content)
     return enhanced_article

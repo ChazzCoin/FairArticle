@@ -7,7 +7,7 @@ import FairResources
 from F.LOG import Log
 from F import DICT
 
-from FM.Jarticle.jdexes.jCompany import jCompany
+from FCM.Jarticle.jdexes.jCompany import jCompany
 jc = jCompany.constructor_jcompany()
 
 Log = Log("Jarticle.Engine.Sozin")
