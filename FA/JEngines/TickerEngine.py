@@ -2,16 +2,19 @@ from F import LIST
 from FNLP import Ticker
 from FNLP.Language import Tokenizer
 from FNLP.Regex import ReWords, Re
-from FairResources import get_stock_tickers, tickers
+from FairResources import tickers
 import FairResources
 from F.LOG import Log
 from F import DICT
 
-from FCM.Jarticle.jdexes.jCompany import jCompany
-jc = jCompany.constructor_jcompany()
+from FCM.Jarticle.jCompany import jCompany
+from FCM.Jarticle.jCryptocurrencies import jCryptocurrencies
+jc = jCompany()
+jcrypto = jCryptocurrencies()
 
 Log = Log("Jarticle.Engine.Sozin")
-STOCK_TICKERS = get_stock_tickers()
+STOCK_TICKERS = jc.get_list_of_all_tickers()
+CRYPTO_TICKERS = jcrypto.get_list_of_all_tickers()
 STOP_WORDS = FairResources.get_stopwords()
 
 def extract_all(content):
@@ -83,7 +86,7 @@ def classify_ticker_v2(potential_ticker, stopWords=None):
         return False
     # -> Stock -> if in stock tickers and not in crypto tickers
     if word in STOCK_TICKERS:
-        if word not in tickers.CRYPTO_TICKERS:
+        if word not in CRYPTO_TICKERS:
             Log.d(f"classify_tickers: Word={word}, Outcome={(stock, word)}")
             return stock, word
     # -> CRYPTO -> if word is in Special Tickers, crypto.

@@ -1,4 +1,5 @@
 from FA.Categories import Topics
+from FA.JEngines import Categorizer
 from F import DICT
 from F import LIST
 from FNLP.Language import Utils
@@ -9,8 +10,6 @@ Log = Log("Engine.Processor.TopicProcessor")
 # UNSURE = "Unsure"
 # UNCATEGORIZED = [UNSURE, UNKNOWN]
 TOPIC = Topics.ALL_CATEGORIES()
-
-# JARTICLE = jArticles.constructor_jarticles()
 
 # -> Master Runner
 def process_list_of_articles(articles):
@@ -39,47 +38,28 @@ def process_single_article(article, isUpdate=False):
         body = DICT.get("body", article)
         content = Utils.combine_args_str(title, description, body)
         # -> Score/Match Content
-        main_cats = TOPIC.main_categorizer(content)
-        sub_cats = TOPIC.sub_categorizer(content)
+        main_cats = Categorizer.categorizer_layer2_db_models(content)
+        # sub_cats = TOPIC.sub_categorizer(content)
         # -> Remove matched topics with low scores
         # -> Main Variables
         highest_main_cat_name = LIST.get(0, main_cats)
         highest_main_score = LIST.get(1, main_cats)
         matched_main_terms = LIST.get(2, main_cats)
         # -> Sub Variables
-        highest_topic_name = LIST.get(0, sub_cats)
-
-        if highest_topic_name == "metaverse":
-            # take secondary list and add scores...
-            pass
-
-        highest_score = LIST.get(1, sub_cats)
-        matched_terms = LIST.get(2, sub_cats)
+        # highest_topic_name = LIST.get(0, sub_cats)
+        # highest_score = LIST.get(1, sub_cats)
+        # matched_terms = LIST.get(2, sub_cats)
         Log.d(f"Setting ALL Variables: article={id}")
         # -> MAIN CATEGORY
         article["category"] = highest_main_cat_name
         article["category_scores"] = matched_main_terms
         article["score"] = highest_main_score
         # -> SUB CATEGORY
-        article["sub_category"] = highest_topic_name
-        article["sub_category_scores"] = matched_terms
-        article["sub_score"] = highest_score
+        # article["sub_category"] = highest_topic_name
+        # article["sub_category_scores"] = matched_terms
+        # article["sub_score"] = highest_score
         return article
     except Exception as e:
         print(f"Failed: {e}")
         return article
 
-
-""" UNTESTED FUNCTIONS """
-# def place_article_in_category_list(self, topic_name, article):
-#     if self.categories.__contains__(topic_name):
-#         temp_list = self.categories[topic_name]
-#         temp_list.append(article)
-#         self.categories[topic_name] = temp_list
-#     else:
-#         self.categories[topic_name] = [article]
-
-
-
-# if __name__ == '__main__':
-#     TopicProcessor()

@@ -10,4 +10,11 @@
     <orderEntry type="module" module-name="FairResources" />
     <orderEntry type="module" module-name="FairQt" />
   </component>
+  <component name="TemplatesService">
+    <option name="TEMPLATE_FOLDERS">
+      <list>
+        <option value="$MODULE_DIR$" />
+      </list>
+    </option>
+  </component>
 </module>

@@ -1,6 +1,6 @@
 from FA.JEngines.JarticleEnhancer.JProcess import process_article
 from FA.JEngines import CategoryEngine
-# from FA.JEngines import TickerEngine
+from FA.JEngines import TickerEngine
 from FA.JHelpers import NLTK
 from FNLP.Language import Summarizer, Keywords
 from F import LIST, DICT, DATE
@@ -55,19 +55,19 @@ def categorizer(article):
     Log.i("Category Engine...")
     return CategoryEngine.process_single_article(article, isUpdate=True)
 
-# def sozin(content):
-#     Log.i("Ticker Engine...")
-#     tickers = TickerEngine.extract_all(content)
-#     stock_tickers = LIST.get(0, tickers)
-#     crypto_tickers = LIST.get(1, tickers)
-#     Log.d("Tickers: " + str(tickers))
-#     if stock_tickers and crypto_tickers:
-#         return tickers
-#     elif stock_tickers:
-#         return stock_tickers
-#     elif crypto_tickers:
-#         return crypto_tickers
-#     return False
+def sozin(content):
+    Log.i("Ticker Engine...")
+    tickers = TickerEngine.extract_all(content)
+    stock_tickers = LIST.get(0, tickers)
+    crypto_tickers = LIST.get(1, tickers)
+    Log.d("Tickers: " + str(tickers))
+    if stock_tickers and crypto_tickers:
+        return tickers
+    elif stock_tickers:
+        return stock_tickers
+    elif crypto_tickers:
+        return crypto_tickers
+    return False
 
 # def get_company_reference(article):
 #     Log.i("Company Reference Engine...")
@@ -116,7 +116,7 @@ def enhance_article(article, content):
     article = categorizer(article)
     article["keywords"] = get_keywords(article)
     article["summary"] = get_summary(article)
-    # article["tickers"] = sozin(content)
+    article["tickers"] = sozin(content)
     # article["company_ids"] = get_company_reference(article)
     article["sentiment"] = get_sentiment(content)
     # article["source_rank"] = get_source_page_rank(article)

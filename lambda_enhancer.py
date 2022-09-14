@@ -1,12 +1,11 @@
-import time
-
+import schedule
 from FA.JEngines.JarticleEnhancer import RUN
 
-THREE_HOURS = 10800
+def start():
+    RUN(saveToDB=True)
 
+# schedule.every().hour.do(start)
 if __name__ == '__main__':
-    while True:
-        print(f"Running Jarticle Enhancements...")
-        RUN(saveToDB=True)
-        print(f"Sleeping for {THREE_HOURS} seconds...")
-        time.sleep(THREE_HOURS)
+    start()
+    # while True:
+    #     schedule.run_pending()

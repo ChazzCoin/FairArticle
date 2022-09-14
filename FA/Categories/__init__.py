@@ -200,8 +200,13 @@ class Topics:
 
 if __name__ == "__main__":
     # print(TERMS_LIST)
-    cont = "hey this is the worlds basketball dumbest content about economy business ripple and of course, the metaverse itself!!! soccer, taxes virtual real estate and all kinds of bitcoin!"
-    t = Topic.ALL_CATEGORIES()
-    temp = t.get_all_rss_urls()
-    score = t.main_secondary_categorizer("metaverse", cont)
-    print(score)
+    t = Topics.ALL_CATEGORIES()
+    collection = "models"
+    # -> Model
+    name = "programming"
+    weighted_terms = t.main_categories[name]["weighted_terms"]
+    secondary_weighted_terms = t.main_categories[name]["secondary_weighted_terms"]
+    from FCM.Jarticle.jModels import jModels
+    jm = jModels()
+    modelQ = jm.create_model_query(name, weighted_terms, secondary_weighted_terms)
+    jm.add_model(modelQ)

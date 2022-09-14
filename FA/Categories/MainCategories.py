@@ -382,6 +382,13 @@ class MainCategories:
                               ]
     metaverse_search_terms_test = ["metaverse", "virtual world", "nft"]
 
+
+    """
+    -> Update secondary words
+    -> Grab from the database and match terms from virtual worlds...
+    -> Update the enhancer to re-analyze..
+    """
+
     metaverse_secondary_weighted_terms = {
 
         "land": MIDDLE_WEIGHT,
