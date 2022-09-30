@@ -1,7 +1,6 @@
 from F import DICT
 import F
-from FNLP import Language
-from FA.JEngines import JarticleEnhancer
+from FA.JEngines.JarticleEnhancer import Enhancers, MetaEnhancers
 
 from F.LOG import Log
 Log = Log("Jarticle.Engine.Processor.ArticleProcessor_v2")
@@ -23,5 +22,6 @@ def process_article(article, isUpdate):
     # -> Combine All Main Content (Title, Body, Description)
     content = F.combine_args_str(title, body, description)
     # -> Enhancers
-    enhanced_article = JarticleEnhancer.enhance_article(article=article, content=content)
+    enhanced_article = Enhancers.enhance_article(article=article, content=content)
+    enhanced_article = MetaEnhancers.enhance_article(article=enhanced_article)
     return enhanced_article

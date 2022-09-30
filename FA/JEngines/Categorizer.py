@@ -122,16 +122,23 @@ def private_run_matcher(word_list, weighted_terms):
         # 3. -> Loop All Tokens AND MATCH!!
         for token in word_list:
             # Stay Safe People
-            if not token and token == "" or token == " ":
+            if not token or token == "" or token == " ":
                 continue
             # MATCHER! -> if content word is in expanded weighted term list...
-            if token in expanded_key_list:
+            if is_match(token, expanded_key_list):
                 # -> We have a match!
                 key_score = weighted_terms[w_term]
                 score += key_score
                 temp_dict = DICT.add_matched_word_to_result(w_term, temp_dict)
     # -> 4. Finish Up
     return score, temp_dict  # ( score, { "weighted_term": "match_count", "weighted_term": "match_count" } )
+
+def is_match(word:str, word_list:list):
+    word = str(word).lower() # Make LowerCase
+    word_list = [str(item).lower() for item in word_list] # Make All Lowercase
+    if word in word_list:
+        return True
+    return False
 
 """ PRIVATE -> Helper Function. """
 def private_remove_empty_scores(cats, all_scores):
