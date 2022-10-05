@@ -9,6 +9,7 @@ import FQt
 from FW.FairSocket import Server
 from F.CLASS import Thread, FAIR_CALLBACK_CHANNEL
 from FCM.Jarticle.jProvider import jPro
+from FAui.MongoQ import harkPro
 from F import LIST, DICT, DATE, OS
 from FQt.MainWindow import FairMainWindow
 from FCM import MCServers
@@ -257,9 +258,25 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
         pass
 
     def onClick_btnMetaReport(self):
+        self.onClick_btnClear()
+        daysBack = int(self.editMetaDaysBack.toPlainText())
+        if daysBack <= 0:
+            daysBack = 30
+        meta_articles = self.jpro.get_meta_feed_v1(daysBack=int(daysBack))
+        self.set_current_articles(meta_articles)
+
+    def onClick_btnMetaReport2(self):
+        self.onClick_btnClear()
+        daysBack = int(self.editMetaDaysBack.toPlainText())
+        if daysBack <= 0:
+            daysBack = 30
+        meta_articles = self.jpro.get_meta_feed_v2(daysBack=int(daysBack))
+        self.set_current_articles(meta_articles)
+
+    def onClick_btnMetaCategory(self):
+        self.onClick_btnClear()
         meta_articles = self.jpro.get_metaverse_articles()
         self.set_current_articles(meta_articles)
-        pass
 
     """ Mongo Server Connect for Articles """
     def onClick_btnServerConnect(self):
@@ -267,7 +284,7 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
         host = self.editServerHost.text()
         port = self.editServerPort.text()
         dbUri = MCServers.BASE_MONGO_URI(host, port)
-        self.jpro = jPro(dbUri=dbUri, dbName=name)
+        self.jpro = harkPro(dbUri=dbUri, dbName=name)
         if self.jpro and self.jpro.is_connected():
             self.toggleServerIsConnected.setChecked(True)
             self.btnServerConnect.setEnabled(False)
@@ -319,6 +336,7 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
         if not article:
             self.txtBody.setText("No Articles Found...")
             return
+        isEnhanced = True
         # -> Set Global Current
         self.current_article = article
         # -> Set Title
@@ -331,12 +349,16 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
         author = DICT.get("author", article)
         self.editDetailsAuthor.setText(str(author))
         self.editDetailsAuthor.setEnabled(False)
-        category = DICT.get("category", article)
-        self.editDetailsCategory.setText(category)
-        self.editDetailsCategory.setEnabled(False)
-        score = DICT.get("score", article)
-        self.editDetailsScore.setText(str(score))
-        self.editDetailsScore.setEnabled(False)
+        try:
+            category = DICT.get("category", article)
+            self.editDetailsCategory.setText(category)
+            self.editDetailsCategory.setEnabled(False)
+            score = DICT.get("score", article)
+            self.editDetailsScore.setText(str(score))
+            self.editDetailsScore.setEnabled(False)
+        except:
+            isEnhanced = False
+            print("Not Enhanced")
         source = DICT.get("source", article)
         self.editDetailsSource.setText(source)
         self.editDetailsSource.setEnabled(False)
@@ -345,7 +367,7 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
         self.editDetailsUrl.setEnabled(False)
         # -> Set Main Body
         body = DICT.get("body", article, default="No Body...")
-        if self.toggleSummary:
+        if self.toggleSummary and isEnhanced:
             summary = DICT.get("summary", article, default=False)
             self.txtBody.setText(summary if summary else body)
         else:
