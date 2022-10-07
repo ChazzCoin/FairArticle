@@ -254,8 +254,13 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
 
     # -> Reports...
 
-    def onClick_btnCryptoReport(self):
-        pass
+    def onClick_btnMetaLand(self):
+        self.onClick_btnClear()
+        daysBack = int(self.editMetaDaysBack.toPlainText())
+        if daysBack <= 0:
+            daysBack = 30
+        meta_articles = self.jpro.get_meta_feed_v4(daysBack=int(daysBack))
+        self.set_current_articles(meta_articles)
 
     def onClick_btnMetaReport(self):
         self.onClick_btnClear()
@@ -322,15 +327,18 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
         self.lcdResultCount.display(int(count))
         self.lblResultCountNumber.setText(str(count))
         isFirst = True
+        number = 1
         for art in articles:
             if isFirst:
                 self.set_current_article(art)
                 isFirst = False
-            key = DICT.get("title", art)
-            # tempDate = DICT.get("published_date", art)
-            # key = f"{tempDate}.{tempTitle}"
+            title = DICT.get("title", art)
+            score = DICT.get("score", art, "NoScore")
+            date = DICT.get("published_date", art, "NoDate")
+            key = f"{number}. [ {score} ] {date} \n{title}\n"
             self.current_articles[key] = art
             self.listArticlesByTitle.addItem(key)
+            number += 1
 
     def set_current_article(self, article):
         if not article:
