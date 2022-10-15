@@ -8,7 +8,6 @@ import sys
 import FQt
 from FW.FairSocket import Server
 from F.CLASS import Thread, FAIR_CALLBACK_CHANNEL
-from FCM.Jarticle.jProvider import jPro
 from FAui.MongoQ import harkPro
 from F import LIST, DICT, DATE, OS
 from FQt.MainWindow import FairMainWindow
@@ -65,6 +64,22 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
         new_article = DICT.get(title, self.current_articles)
         self.set_current_article(new_article)
         self.tabWidget.setCurrentIndex(1)
+
+    def onDoubleClick_listEnhancedTickers(self, item):
+        ticker = item.text()
+        results = self.jpro.jworld.find_world_by_ticker(ticker)
+        if results:
+            details = ""
+            for keyItem in results:
+                details += f"\n-> {keyItem}:\n{results[keyItem]}\n"
+            self.editEnhancedCompany.setText(str(details))
+        else:
+            results = self.jpro.jcompany.find_company_by_ticker(ticker)
+            if results:
+                details = ""
+                for keyItem in results:
+                    details += f"\n-> {keyItem}:\n{results[keyItem]}\n"
+                self.editEnhancedCompany.setText(str(details))
 
     def onTextChanged_editSearchText(self, item):
         print("onTextChanged", item)
@@ -320,6 +335,7 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
             self.lblArticleCountNumber.setText(str(art_count))
 
     def set_current_articles(self, articles):
+        """ Setup Master List of Article Headlines """
         if not articles:
             return
         self.listArticlesByTitle.clear()
@@ -341,6 +357,7 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
             number += 1
 
     def set_current_article(self, article):
+        """ Setup Single Article to be Read """
         if not article:
             self.txtBody.setText("No Articles Found...")
             return
@@ -357,16 +374,6 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
         author = DICT.get("author", article)
         self.editDetailsAuthor.setText(str(author))
         self.editDetailsAuthor.setEnabled(False)
-        try:
-            category = DICT.get("category", article)
-            self.editDetailsCategory.setText(category)
-            self.editDetailsCategory.setEnabled(False)
-            score = DICT.get("score", article)
-            self.editDetailsScore.setText(str(score))
-            self.editDetailsScore.setEnabled(False)
-        except:
-            isEnhanced = False
-            print("Not Enhanced")
         source = DICT.get("source", article)
         self.editDetailsSource.setText(source)
         self.editDetailsSource.setEnabled(False)
@@ -380,6 +387,48 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
             self.txtBody.setText(summary if summary else body)
         else:
             self.txtBody.setText(body)
+        self.setup_enhancements(article)
+
+    def setup_basics(self, article):
+        pass
+
+    def setup_enhancements(self, article):
+        try:
+            category = DICT.get("category", article)
+            self.editDetailsCategory.setText(category)
+            self.editDetailsCategory.setEnabled(False)
+            score = DICT.get("score", article)
+            self.editDetailsScore.setText(str(score))
+            self.editDetailsScore.setEnabled(False)
+
+            self.editEnhancedCompany.setText("")
+            # Keywords
+            self.listEnhancedKeywords.clear()
+            keywords = DICT.get("keywords", article, [])
+            tags = DICT.get("tags", article, [])
+            all_words = keywords + tags
+            all_words = LIST.flatten(all_words)
+            if all_words:
+                for word in all_words:
+                    self.listEnhancedKeywords.addItem(word)
+            else:
+                self.listEnhancedKeywords.addItem("No Keywords")
+
+            # Tickers
+            self.listEnhancedTickers.clear()
+            tickers = DICT.get("tickers", article, [])
+            # list or dict
+            if type(tickers) in [list]:
+                for item in tickers:
+                    for key in item:
+                        self.listEnhancedTickers.addItem(key)
+            else:
+                for key in tickers:
+                    self.listEnhancedTickers.addItem(key)
+
+        except:
+            isEnhanced = False
+            print("Not Enhanced")
 
     def clearSearchText(self):
         self.editSearchText.setText("")

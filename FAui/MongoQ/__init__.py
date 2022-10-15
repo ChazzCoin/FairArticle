@@ -2,7 +2,8 @@ from F import DATE, LIST
 from FCM.FQ import AO
 from FCM.Jarticle import JQ
 from FCM.Jarticle.jProvider import jPro
-
+from FCM.Jarticle.jVirtualWorld import jVirtualWorld
+from FCM.Jarticle.jCompany import jCompany
 
 def sort_articles_by_score(articles) -> list:
     # Log.v(f"sort_hookups_by_score: IN: {articles}")
@@ -60,9 +61,18 @@ class MetaFeeds:
         {AO.LIMIT: 500}
     ]
 
-class harkPro(jPro):
 
-# "2022-09-01T00:00:00.000Z"#
+class harkPro(jPro):
+    jworld = jVirtualWorld()
+    jcompany = jCompany()
+    # def __int__(self):
+    #     self.init_references()
+    # def init_references(self):
+    #     jworld = jVirtualWorld()
+    #     jcompany = jCompany()
+    def get_ticker(self, ticker):
+        return self.jworld.find_world_by_ticker(ticker)
+    # "2022-09-01T00:00:00.000Z"#
     def get_meta_feed_v1(self, daysBack=7):
         """ Search + Category """
         today = DATE.get_now_month_day_year_str()
