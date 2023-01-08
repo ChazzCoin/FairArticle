@@ -42,51 +42,12 @@
      </size>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tabArticleResults">
      <attribute name="title">
       <string>Search</string>
      </attribute>
-     <widget class="QListWidget" name="listArticlesByTitle">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>290</y>
-        <width>1031</width>
-        <height>481</height>
-       </rect>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>5000</width>
-        <height>5000</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>16</pointsize>
-       </font>
-      </property>
-      <property name="isWrapping" stdset="0">
-       <bool>false</bool>
-      </property>
-      <property name="resizeMode">
-       <enum>QListView::Fixed</enum>
-      </property>
-     </widget>
      <widget class="QFrame" name="frameMainSearch">
       <property name="geometry">
        <rect>
@@ -574,12 +535,84 @@ p, li { white-space: pre-wrap; }
        </widget>
       </widget>
      </widget>
+     <widget class="QTabWidget" name="tabSearch">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>290</y>
+        <width>1041</width>
+        <height>491</height>
+       </rect>
+      </property>
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <widget class="QWidget" name="Search">
+       <attribute name="title">
+        <string>Search</string>
+       </attribute>
+       <widget class="QListWidget" name="listArticlesByTitle">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>1041</width>
+          <height>461</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>5000</width>
+          <height>5000</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>16</pointsize>
+         </font>
+        </property>
+        <property name="isWrapping" stdset="0">
+         <bool>false</bool>
+        </property>
+        <property name="resizeMode">
+         <enum>QListView::Fixed</enum>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="Favorites">
+       <attribute name="title">
+        <string>Favorites</string>
+       </attribute>
+       <widget class="QListWidget" name="listFavoriteArticles">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>1041</width>
+          <height>461</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+     </widget>
      <zorder>label_24</zorder>
-     <zorder>listArticlesByTitle</zorder>
      <zorder>frameMainSearch</zorder>
      <zorder>checkSummary</zorder>
      <zorder>btnClear</zorder>
      <zorder>toolBox</zorder>
+     <zorder>tabSearch</zorder>
     </widget>
     <widget class="QWidget" name="tabArticleSearch">
      <attribute name="title">
@@ -617,9 +650,9 @@ p, li { white-space: pre-wrap; }
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>150</y>
+           <y>170</y>
            <width>971</width>
-           <height>601</height>
+           <height>581</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -641,13 +674,13 @@ p, li { white-space: pre-wrap; }
            <x>0</x>
            <y>110</y>
            <width>970</width>
-           <height>41</height>
+           <height>61</height>
           </rect>
          </property>
          <property name="font">
           <font>
            <family>Helvetica</family>
-           <pointsize>20</pointsize>
+           <pointsize>16</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -816,30 +849,17 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </widget>
-        <widget class="QLabel" name="label_17">
-         <property name="geometry">
-          <rect>
-           <x>900</x>
-           <y>30</y>
-           <width>60</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Keywords</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_19">
+        <widget class="QPushButton" name="btnAddFavorite">
          <property name="geometry">
           <rect>
            <x>900</x>
            <y>50</y>
-           <width>60</width>
-           <height>16</height>
+           <width>113</width>
+           <height>32</height>
           </rect>
          </property>
          <property name="text">
-          <string>Tickers</string>
+          <string>Add Favorite</string>
          </property>
         </widget>
        </widget>

@@ -1,7 +1,7 @@
 from FA.JEngines import CategoryEngine, TickerEngine
 from FNLP.Language import Summarizer, Keywords, Words
 from FCM.Jarticle.jCompany import jCompany
-from FA.JHelpers import NLTK
+from FBrain.JHelpers import NLTK
 from F import LIST, DICT, DATE
 from F.LOG import Log
 

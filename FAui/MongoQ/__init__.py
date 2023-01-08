@@ -16,6 +16,14 @@ class harkPipe:
     CATEGORY = lambda categoryName: { "$match": { "category": { "$eq": categoryName } } }
 
 class MetaFeeds:
+    meta_dynamic = lambda gte, lte, *searchTerms: [
+        # { "$match": { "pub_date": { "$gte": weekBack, "$lte": DATE.TO_DATETIME(today) } } },
+        harkPipe.DATE_RANGE(gte, lte),
+        {"$match": {"$or": [ JQ.SEARCH_ALL_STRICT(search_term=term) for term in searchTerms ] }},
+        {"$sort": {"pub_date": -1}},
+        {AO.LIMIT: 500}
+    ]
+
     meta_v1 = lambda gte, lte: [
         # { "$match": { "pub_date": { "$gte": weekBack, "$lte": DATE.TO_DATETIME(today) } } },
         harkPipe.DATE_RANGE(gte, lte),

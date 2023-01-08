@@ -1,20 +1,13 @@
-#
 #/usr/bin/env python3
-import subprocess
 
 # from PyQt6 import QtWidgets
-import sys
-
 import FQt
-from FW.FairSocket import Server
-from F.CLASS import Thread, FAIR_CALLBACK_CHANNEL
+from F.CLASS import FAIR_CALLBACK_CHANNEL
 from FAui.MongoQ import harkPro
 from F import LIST, DICT, DATE, OS
 from FQt.MainWindow import FairMainWindow
 from FCM import MCServers
-from FW.FairSocket import FairMessage
 from FAui.ViewElements import ViewElements
-from FW.FairSocket.Client import FairClient
 
 ui_file_path = f"{OS.get_cwd()}/mainw.ui"
 
@@ -25,10 +18,11 @@ ui_file_path = f"{OS.get_cwd()}/mainw.ui"
     : Action Function -> action_btnSearch
 """
 
-class LucasUI(FairMainWindow, ViewElements, FairClient):
+class LucasUI(FairMainWindow, ViewElements):
     """ Variables are in ViewElements """
     searchMode = "default"
     fairclient = None
+    allArticles = []
 
     def __init__(self):
         super(LucasUI, self).__init__()
@@ -86,7 +80,6 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
 
     def onClick_btnSearch(self):
         """ Master Search """
-
         self._build_search()
 
     @FAIR_CALLBACK_CHANNEL.subscribe
@@ -99,6 +92,7 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
 
     def _load_new_articles(self, results):
         self.set_current_articles(results)
+        self.allArticles.append(results)
         firstArt = LIST.get(0, results)
         self.set_current_article(firstArt)
 
@@ -134,86 +128,6 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
             print("search -> General Search All")
             results = self.jpro.search_all(search_term=searchTerm, limit=limit, page=page)
         self._load_new_articles(results)
-
-    """ CHAT SERVER """
-
-    def onClick_btnChatConnect(self, item):
-        host = self.editChatHost.text()
-        self.fairclient = FairClient(serverUrl=host, userName="Jarticle", callback=self.onOverrideMessage,
-                                     OverRideOnResponse=self.override_OnResponse)
-        try:
-            self.fairclient.connect()
-            self.fairclient.emitOnConnect()
-            self.fairclient.emit("onIsRunning", {})
-            self.fairclient.emit("onGetServerName", {})
-            self.btnChatConnect.setEnabled(False)
-            self.btnChatDisconnect.setEnabled(True)
-            self.toggleChatIsConnected.setChecked(True)
-            self.toggleChatIsConnected.setEnabled(False)
-        except:
-            return
-
-    def onClick_btnChatDisconnect(self, item):
-        self.fairclient.socket.disconnect()
-        self.btnChatConnect.setEnabled(True)
-        self.btnChatDisconnect.setEnabled(False)
-        self.toggleChatIsConnected.setChecked(False)
-        self.toggleChatIsConnected.setEnabled(True)
-        self.listChatProcessResponse.clear()
-        self.labelChatServerName.setText("No Server Connected...")
-
-    def onClick_btnChatSend(self, item):
-        mess = self.editChatInput.text()
-        m = f"ME: {mess}"
-        self.listChatMessages.addItem(m)
-        messObj = FairMessage(message=mess, userName=self.fairclient.userName)
-        self.fairclient.emit("onMessage", messObj.toJson())
-        self.editChatInput.setText("")
-
-    def onOverrideMessage(self, data):
-        print("override", data)
-        fm = FairMessage().fromJson(data)
-        if not fm:
-            return
-        if fm.userName == self.fairclient.userName:
-            return
-        m = f"{fm.userName}: {fm.message}"
-        self.listChatMessages.addItem(m)
-
-    def onClick_btnChatServerStart(self, item):
-        self.chatserver = Thread.runFuncInBackground(Server.FairServer().start_server)
-        self.toggleChatServerIsRunning.setChecked(True)
-        self.toggleChatServerIsRunning.setEnabled(False)
-        self.btnChatServerStart.setEnabled(False)
-
-    def onClick_btnChatProcessStart(self):
-        self.fairclient.emit("onStartProcess", {})
-        self.toggleChatProcessIsRunning.setChecked(True)
-        self.btnChatProcessStart.setEnabled(False)
-        self.btnChatProcessStop.setEnabled(True)
-
-    def override_OnResponse(self, data):
-        serverName = self.get_arg("serverName", data, default=None)
-        if serverName:
-            self.labelChatServerName.setText(f"Connected to: {str(serverName)}")
-        isRunning = self.get_arg("processIsRunning", data, default=None)
-        if isRunning is not None:
-            if isRunning == "True":
-                self.toggleChatProcessIsRunning.setChecked(True)
-                self.btnChatProcessStart.setEnabled(False)
-                self.btnChatProcessStop.setEnabled(True)
-            else:
-                self.toggleChatProcessIsRunning.setChecked(False)
-                self.btnChatProcessStart.setEnabled(True)
-                self.btnChatProcessStop.setEnabled(False)
-        if data:
-            self.listChatProcessResponse.addItem(str(data))
-
-    def onClick_btnChatProcessStop(self):
-        self.fairclient.emit("onStopProcess", {})
-        self.toggleChatProcessIsRunning.setChecked(False)
-        self.btnChatProcessStart.setEnabled(True)
-        self.btnChatProcessStop.setEnabled(False)
 
 
     """ Article Search """
@@ -324,6 +238,18 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
         self.txtBody.setText("")
         self.clearSearchText()
 
+    def onClick_btnAddFavorite(self):
+        title = DICT.get("title", self.current_article)
+        self.listFavoriteArticles.addItem(title)
+
+    def onDoubleClick_listFavoriteArticles(self, item):
+        title = item.text()
+        for art in self.allArticles:
+            artTitle = DICT.get("title", art)
+            if artTitle == title:
+                self.set_current_article(art)
+                self.tabWidget.setCurrentIndex(1)
+
     """Server Details"""
     def get_server_details(self):
         self.set_article_count()
@@ -338,6 +264,8 @@ class LucasUI(FairMainWindow, ViewElements, FairClient):
         """ Setup Master List of Article Headlines """
         if not articles:
             return
+        self.allArticles.append(articles)
+        self.allArticles = LIST.flatten(self.allArticles)
         self.listArticlesByTitle.clear()
         count = len(articles)
         self.lcdResultCount.display(int(count))
