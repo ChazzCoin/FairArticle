@@ -11,12 +11,12 @@ collection = db.collection("articles")
 # -> Get Articles/Main Content
 # todo: add date and such to fairmongo
 # todo: organize this as well by date...
-articles = collection.base_query({ }, limit=2000)
+articles = collection.base_query({ }, limit=100)
 # articles = LIST.flatten(articlesOne, articlesTwo, articlesThree, articlesFour, articlesFive)
 """ Analyzing Content from Articles """
 cModel = ContentModel()
 cModel.add_webpages(articles)
-cModel.run_analyzer(saveToBrain=False)
+cModel.run_analyzer(saveToBrain=True)
 print(cModel)
 
 

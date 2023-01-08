@@ -7,7 +7,9 @@ from F import DATE, CONVERT, DICT, LIST
 from F.CLASS import FairClass
 from FNLP.Engines.Words import Analyzers
 from FM.DBDatabase import DATABASE, COLLECTION
-
+from FBrain.MongoDB.AnalyzedWords import AnalyzedWords
+from FBrain import BrainMath
+Log = Log("ContentModel")
 BASE_MODEL = lambda word, score, in_webpages, out_webpages: {
                                                                 "word": word,
                                                                 "score": score,
@@ -37,6 +39,11 @@ ENGLISH_WORD = lambda word, first_letter, letter_count, isFirstCapital: \
 class ContentModel(FairClass):
     # Internal Only
     webpage_models = []
+    # The Brain
+    brain_scores = []
+    new_analyzed_scores = []
+    brain_stop_scores = []
+    new_analyzed_stop_scores = []
     # Main
     contents: list = []
     tokens: list = []
@@ -61,9 +68,27 @@ class ContentModel(FairClass):
         breakdown = Analyzers.analyze_content(self.tokens)
         self.fromJson(breakdown)
         self.unique_words_count = len(self.unique_words)
+        self.get_brain_analyzed_words()
+        self.merge_with_the_brain()
         if saveToBrain:
             self.finish_and_save_to_the_brain()
         return breakdown
+
+    # def prepare_for_the_brain(self):
+    #     # All Scores
+    #     for key in self.scores.keys():
+    #         self.analyzed_scores.append({"word": key, "count": self.scores[key], "updatedDate": DATE.TO_DATETIME(DATE.mongo_date_today_str())})
+    #     # All Scores
+    #     for key in self.stop_scores.keys():
+    #         self.analyzed_stop_scores.append({"word": key, "count": self.scores[key],
+    #                                      "updatedDate": DATE.TO_DATETIME(DATE.mongo_date_today_str())})
+
+    def get_brain_analyzed_words(self):
+        self.brain_scores = AnalyzedWords().get_all_word_counts()
+
+    def merge_with_the_brain(self):
+        Log.i("Merging With Brain")
+        self.new_analyzed_scores = BrainMath.add_word_frequency_counts(self.brain_scores, self.scores)
 
     def add_webpages(self, webpages:list):
         for ac in Log.ProgressBarYielder(webpages, prefix="Preparing Content..."):
@@ -97,7 +122,9 @@ class ContentModel(FairClass):
         self.webpages_analyzed_count = len(self.contents)
 
     def finish_and_save_to_the_brain(self):
-        self.addUpdate_webpage_references()
+        # self.addUpdate_webpage_references()
+        self.addUpdate_word_counts(self.new_analyzed_scores)
+        self.addUpdate_stop_word_counts()
 
     """ Update The Brain """
 
@@ -108,6 +135,12 @@ class ContentModel(FairClass):
             findQuery = { "webpage_id": model["webpage_id"] }
             collection.update_record(findQuery, model)
         db.client.close()
+
+    def addUpdate_word_counts(self, new_word_counts):
+        return AnalyzedWords().addUpdate_word_counts(new_word_counts, "analyzed_words")
+
+    def addUpdate_stop_word_counts(self):
+        return AnalyzedWords().addUpdate_word_counts(self.stop_scores, "analyzed_stop_words")
 
     """ Import/Export """
 
