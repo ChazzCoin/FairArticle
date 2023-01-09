@@ -2,7 +2,7 @@ from F import LIST, DICT
 from FM.DBDatabase import DBDatabase
 
 
-class CategoryModel:
+class CategoryDB:
     db_brain = None
     db_collection = None
     model_categories = {}

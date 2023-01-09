@@ -3,7 +3,7 @@ from F.LOG import Log
 from FM.DBDatabase import DBDatabase
 from FNLP.Engines.Words import Frequency
 from FBrain.JHelpers import ART
-from FBrain.JModel import WordModel
+from FBrain.BrainModels import WordModel
 
 MODEL = WordModel()
 

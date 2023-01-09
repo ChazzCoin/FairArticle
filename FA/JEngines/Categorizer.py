@@ -53,7 +53,7 @@ def categorizer_layer2(content, categories: {}):
     return highest_main_cat_name, final_score, highest_main_matches
 
 def categorizer_layer2_db_models(content):
-    from FBrain.JModel import Models
+    from FBrain.BrainModels import Models
     models = Models.get_all_models_to_dict()
     # -> 1. Convert String into Token List
     word_list = private_content_to_wordList(content)
