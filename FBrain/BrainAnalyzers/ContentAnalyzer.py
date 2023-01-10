@@ -1,10 +1,7 @@
-
 from F.LOG import Log
-from FBrain.BrainDB import DB
-from FBrain.BrainModels.Brain import BrainModel
-# from FBrain.BrainModels.Content import ContentModel
-from FM.QueryHelper import O, Q
-from FNLP.Models.Content import ContentModel
+from FBrain.BrainDB.ArticleProvider import Provider
+from FBrain.BrainModels.BrainManager import BrainManager
+from FNLP.LanguageManagers.ContentManager import ContentManager
 
 """
 checklist
@@ -23,51 +20,23 @@ checklist
 - BrainMath
 """
 
+"""
+Analyzer 
+Manager
+Engine
+
+"""
+
 Log = Log("Word-Analyzer")
 # Database Setup
+p = Provider()
+articles = p.get_articles_not_analyzed(limit=10000)
 
-client = DB.CLIENT("192.168.1.180", 27017)
-db_research = DB.get_research_db(client)
-collection_articles = db_research.collection("articles")
-db_brain = DB.get_brain_db(client)
-collection_webpages = db_brain.collection("analyzed_webpages")
-
-""" Grabbing Articles """
-# -> Get Articles/Main Content
-# todo: add date and such to fairmongo
-# todo: organize this as well by date...
-webpage_refs = collection_webpages.base_query({}, limit=0)
-ids = []
-id_queries = []
-if webpage_refs:
-    for webpage in webpage_refs:
-        temp_id = webpage["_id"]
-        single_query = {"_id": Q.NOT_EQUALS(temp_id)}
-        ids.append(temp_id)
-        id_queries.append(single_query)
-    final_query = Q.OR(id_queries)
-else:
-    final_query = {}
-
-
-
-articles = collection_articles.base_query(final_query, limit=5)
-articles2 = collection_articles.base_query(final_query, limit=5)
-# articles = LIST.flatten(articlesOne, articlesTwo, articlesThree, articlesFour, articlesFive)
 """ Analyzing Content from Articles """
-cModel1 = ContentModel()
+cModel1 = ContentManager()
 cModel1.add_webpages(articles)
 cModel1.run_analyzer()
 
-
-cModel2 = ContentModel()
-cModel2.add_webpages(articles2)
-cModel2.run_analyzer()
-
-cModel1.absorb_content_model(cModel2)
-print(cModel1)
-
-brainModel = BrainModel()
-brainModel.add_content_model(cModel1)
-brainModel.merge_with_brain()
-print(brainModel)
+""" Merge Analyzed Content with BrainDatan"""
+brainManager = BrainManager(contentManager=cModel1)
+brainManager.run()

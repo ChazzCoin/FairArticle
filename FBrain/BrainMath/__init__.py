@@ -35,7 +35,8 @@ def add_word_frequency_counts(brain_scores:list, new_scores:dict) -> list:
             brain_word = DICT.get("word", brain_item, None)
             brain_count = DICT.get("count", brain_item, None)
             if new_scores.__contains__(brain_word):
-                new_score = int(brain_count) + int(new_scores[brain_word])
+                ns = int(new_scores[brain_word])
+                new_score = int(brain_count) + ns
                 brain_item["count"] = new_score
                 brain_item["updatedDate"] = DATE.TODAY
                 result.append(brain_item)

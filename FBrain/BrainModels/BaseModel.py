@@ -25,3 +25,14 @@ class BaseBrain(FairClass):
                 self.set_variable(var, result)
             else:
                 self.set_variable(var, cm_value)
+
+
+    """ Import/Export """
+    def import_model(self, obj:dict):
+        """ Load JSON Model """
+        self.fromJson(obj)
+    def export_model(self):
+        """ Export Model as JSON"""
+        return self.toJson(removeNone=True)
+    def print_model(self):
+        print(self.toJson())
