@@ -1,4 +1,5 @@
-from F import DICT, CONVERT
+from F import DICT, CONVERT, DATE, LIST
+from FBrain.JArticle import JQ
 from FM.DBDatabase import DBDatabase
 from FM.QueryHelper import O, Q
 
@@ -13,6 +14,7 @@ ANALYZED_WEBPAGES = "analyzed_webpages"
 ANALYZED_WORDS = "analyzed_words"
 ANALYZED_STOP_WORDS = "analyzed_stop_words"
 ANALYZED_SENTENCES = "analyzed_sentences"
+ANALYZED_WORDS_BY_DATE = "analyzed_words_by_date"
 
 class AnalyzedDB:
     db_brain = None
@@ -22,6 +24,7 @@ class AnalyzedDB:
     analyzed_stop_words = None
     analyzed_webpages = None
     analyzed_sentences = None
+    analyzed_words_by_date = None
 
     def __init__(self):
         self.connect_to_brain()
@@ -32,9 +35,15 @@ class AnalyzedDB:
         self.analyzed_stop_words = self.db_brain.collection(ANALYZED_STOP_WORDS)
         self.analyzed_webpages = self.db_brain.collection(ANALYZED_WEBPAGES)
         self.analyzed_sentences = self.db_brain.collection(ANALYZED_SENTENCES)
+        self.analyzed_words_by_date = self.db_brain.collection(ANALYZED_WORDS_BY_DATE)
 
     def get_analyzed_count(self):
         return self.analyzed_webpages.get_document_count()
+    def get_doc_count(self, collection_name):
+        collection = self.db_brain.collection(collection_name)
+        return collection.get_document_count()
+    def addUpdate_analyzed_words_by_date(self, date_models:[{}]):
+        return self.analyzed_words_by_date.addUpdate_records(date_models)
 
     def addUpdate_analyzed_words(self, word_counts:[{}], collection_name:str):
         collection = self.db_brain.collection(collection_name)
@@ -46,6 +55,21 @@ class AnalyzedDB:
 
     def get_analyzed_words(self):
         return self.analyzed_words.base_query({}, limit=0)
+
+    def get_all_analyzed_words_by_date(self):
+        return self.analyzed_words_by_date.base_query({}, limit=0)
+
+    def get_analyzed_words_on_date(self, date):
+        query = Q.BASE("date", DATE.TO_DATETIME(date))
+        results = self.analyzed_words_by_date.base_query(query, limit=0)
+        item = LIST.get(0, results, None)
+        return item
+
+    def get_analyzed_word_counts_on_date(self, date):
+        query = Q.BASE("date", DATE.TO_DATETIME(date))
+        results = self.analyzed_words_by_date.base_query(query, limit=0)
+        item = LIST.get(0, results, None)
+        return DICT.get("word_counts", item, None)
 
     def get_analyzed_stop_words(self):
         return self.analyzed_stop_words.base_query({}, limit=0)
@@ -72,9 +96,6 @@ class AnalyzedDB:
             self.analyzed_webpages.update_record(findQuery, model)
 
 
-
-
-
 if __name__ == '__main__':
-    results = AnalyzedDB().get_analyzed_count()
+    results = AnalyzedDB().get_all_analyzed_words_by_date()
     print(results)

@@ -26,4 +26,4 @@ ANALYZED_WORDS_MODEL = lambda word, count: {"word": word, "count": count, "updat
 ANALYZED_STOP_WORDS_MODEL = lambda word, count: {"word": word, "count": count, "updatedDate": DATE.TODAY}
 ANALYZED_SENTENCES_MODEL = lambda sentence, sentence_date: {"sentence": sentence, "sentence_date": sentence_date, "updatedDate": DATE.TODAY}
 
-ANALYZED_WORDS_BY_DATE = lambda webpage_date, word_counts: {"date": webpage_date, "word_counts": word_counts, "updatedDate": DATE.TODAY}
+ANALYZED_WORDS_BY_DATE = lambda webpage_date, word_counts, words_counted: {"date": webpage_date, "word_counts": word_counts, "words_counted": words_counted, "updatedDate": DATE.TODAY}
